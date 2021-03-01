@@ -6,24 +6,29 @@
 namespace ft
 {
 	template<typename T>
+	struct  						s_list
+	{
+		T 									data;
+		s_list 								*next;
+		s_list 								*prev;
+	};
+	template<typename T>
 	class iterator
 	{
-		template<typename> friend class List;
-		protected:
-			typedef struct  						s_list
-			{
-				T 									data;
-				s_list 								*next;
-				s_list 								*prev;
-			}										t_list;
-
-			t_list *list;
+		private:
+			struct s_list<T> *list;
 		public:
+			typedef T value_type;
+			typedef T &reference;
+			typedef T *pointer;
 			public:
-													iterator(){list = nullptr;}
-													iterator(const iterator &x) { *this = x;}
-			iterator 								&operator=(const t_list &x) {if(list != x){list = x;}return list; }
-			virtual 								~iterator() {}
+													iterator(){}
+													iterator(const iterator &src){*this = src;}
+													iterator(struct s_list<T> &src){list = src;};
+
+													iterator(struct s_list<T> *_list){list = _list;}
+			iterator 								&operator=(const struct s_list<T> &x) {if(list != x){list = x;}return list;}
+													~iterator() {}
 			//-----------------------Overlodes-------------------------//
 			bool 									operator==(const iterator &x)
 			{
@@ -39,94 +44,121 @@ namespace ft
 				else
 					return false;			
 			}
-			T 										&operator*()
+			value_type 										&operator*()
 			{
-				return list->data;
+				return this->list->data;
 			}
-			const T 								&operator*() const
+			const value_type 								&operator*() const
 			{
-				return list->data;
+				return this->list->data;
 			}
-			T*										operator->()
+			pointer										operator->()
 			{
 				return &list->data;
 			}
-			const T*								operator->() const
+			const pointer								operator->() const
 			{
 				return &list->data;
 			}
 			iterator							&operator++()
 			{
-				list = list->next;
-				return list;
+				if (this->list && this->list->next)
+					this->list = this->list->next;
+				return (*this);
+			}
+			iterator							operator++(int)
+			{
+				iterator tmp(*this);
+				operator++();
+				return tmp;
 			}
 			iterator							&operator--()
 			{
-				list = list->prev;
-				return list;
+				if (this->list && this->list->prev)
+					this->list = this->list->prev;
+				return (*this);
+			}
+			iterator							operator--(int)
+			{
+				iterator tmp(*this);
+				operator--();
+				return tmp;
 			}
 		};
 		template<typename T>
 		class reverse_iterator
 		{
-			template<typename> friend class List;
-			protected:
-				typedef struct  						s_list
-				{
-					T 									data;
-					s_list 								*next;
-					s_list 								*prev;
-				}										t_list;
-
-				t_list *list;
+			private:
+			struct s_list<T> 						*list;
 			public:
-				public:
-														reverse_iterator(){list = nullptr;}
-														reverse_iterator(const reverse_iterator &x) { *this = x;}
-				reverse_iterator 								&operator=(const t_list &x) {if(list != x){list = x;}return list; }
-				virtual 								~reverse_iterator() {}
+			typedef T 								value_type;
+			typedef T 								&reference;
+			typedef T 								*pointer;
+
+
+													reverse_iterator(){}
+													reverse_iterator(const reverse_iterator &src){*this = src;}
+													reverse_iterator(struct s_list<T> &src){list = src;};
+
+													reverse_iterator(struct s_list<T> *_list){list = _list;}
+			reverse_iterator						&operator=(const struct s_list<T> &x) {if(list != x){list = x;}return list;}
+													~reverse_iterator() {}
 				//-----------------------Overlodes-------------------------//
-				bool 									operator==(const reverse_iterator &x)
-				{
-					if(list == x.list)
-						return true;
-					else
-						return false;
-				}
-				bool 									operator!=(const reverse_iterator &x)
-				{
-					if(list != x.list)
-						return true;
-					else
-						return false;			
-				}
-				T 										&operator*()
-				{
-					return list->data;
-				}
-				const T 								&operator*() const
-				{
-					return list->data;
-				}
-				T*										operator->()
-				{
-					return &list->data;
-				}
-				const T*								operator->() const
-				{
-					return &list->data;
-				}
-				reverse_iterator		&operator++()
-				{
-					list = list->prev;
-					return list;
-				}
-				reverse_iterator		&operator--()
-				{
-					list = list->next;
-					return list;
-				}
+			bool 									operator==(const reverse_iterator &x)
+			{
+				if(list == x.list)
+					return true;
+				else
+					return false;
+			}
+			bool 									operator!=(const reverse_iterator &x)
+			{
+				if(list != x.list)
+					return true;
+				else
+					return false;			
+			}
+			value_type 										&operator*()
+			{
+				return this->list->data;
+			}
+			const value_type 								&operator*() const
+			{
+				return this->list->data;
+			}
+			pointer										operator->()
+			{
+				return &list->data;
+			}
+			const pointer								operator->() const
+			{
+				return &list->data;
+			}
+			reverse_iterator							&operator++()
+			{
+				if (this->list && this->list->next)
+					this->list = this->list->next;
+				return (*this);
+			}
+			reverse_iterator							operator++(int)
+			{
+				reverse_iterator tmp(*this);
+				operator++();
+				return tmp;
+			}
+			reverse_iterator							&operator--()
+			{
+				if (this->list && this->list->prev)
+					this->list = this->list->prev;
+				return (*this);
+			}
+			reverse_iterator							operator--(int)
+			{
+				reverse_iterator tmp(*this);
+				operator--();
+				return tmp;
+			}
 		};
-	}
+}
 
 #endif
