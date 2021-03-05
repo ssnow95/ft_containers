@@ -1,3 +1,4 @@
+
 #ifndef LIST_HPP
 #define LIST_HPP
 
@@ -32,9 +33,9 @@ namespace ft
 		size_t									_list_size;
 	public:
 		typedef ft::iterator<T>					iterator;
-		typedef const ft::iterator<T>			const_iterator;
+		typedef ft::iterator< const T>			const_iterator;
 		typedef ft::reverse_iterator<T> 		reverse_iterator;
-		typedef const ft::reverse_iterator<T>	const_reverse_iterator;
+		typedef ft::reverse_iterator<const T>	const_reverse_iterator;
 
 		//--------------------constructors------------------------//
 		explicit   								list (const allocator_type& alloc = allocator_type())
@@ -98,7 +99,7 @@ namespace ft
 		}
 		const_iterator							begin() const
 		{
-			return (iterator(_tail_lst->next));
+			return (const_iterator(_tail_lst->next));
 		}
 		iterator								end()
 		{
@@ -106,7 +107,7 @@ namespace ft
 		}
 		const_iterator							end() const
 		{
-			return (iterator(_tail_lst));
+			return (const_iterator(_tail_lst));
 		}
 		// reverse_iterator						rbegin()
 		// {
@@ -414,34 +415,27 @@ namespace ft
 		}
 		void splice (iterator position, list& x, iterator first, iterator last)
 		{
-			struct s_list<T>*tmpIter = position.getList();
-			struct s_list<T>* tmp = new struct s_list<T>;
-			iterator it = x.begin();
-			struct s_list<T>* count = first.getList();
-			while(count->data != last.getList()->data)
+			while(first != last)
 			{
-				tmp->data = count->data;
-				std::cout<< tmp->data<<std::endl;
-				tmp->prev = tmpIter->prev;
-				tmp->next = tmpIter;
-				tmpIter->prev->next = tmp;
-				tmpIter->prev = tmp;
-				_list_size++;
-				_tail_lst->data = _list_size;
-				tmpIter = tmpIter->prev;
-				struct s_list<T>* iter = count;
-				iter = x._tail_lst->next;
-				// while(iter->data != tmp->data)
-				// {
-				// 	iter = iter->next;
-				// }
-				iter->prev->next = iter->next;
-				iter->next->prev = iter->prev;
-				x._list_size--;
-				delete iter;
-				count = count->next;
+				splice(position, x, first);
+				first++;
 			}
-
+		}
+		void remove (const value_type& val)
+		{
+			value_type src = _tail_lst->next->data;
+			struct s_list<T>* tmp = _tail_lst->next;
+			while(tmp != _tail_lst)
+			{
+				src = tmp->data;
+				if(src == val)
+				{
+					erase(iterator(tmp));
+				}
+				tmp = tmp->next;
+				std::cout<< "hi\n";
+			}
+			
 		}
   	};
 };
