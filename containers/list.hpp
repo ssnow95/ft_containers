@@ -437,7 +437,135 @@ namespace ft
 			}
 			
 		}
-  	};
+
+		void sort()
+		{
+			iterator it = begin();
+			iterator it2 = begin();
+			iterator tmp;
+			size_t j = 0;
+			while(j < size())
+			{
+				it2 = begin();
+				tmp = it2;
+				it2++;
+				while(it2 != end())
+				{
+					if(tmp > it2)
+					{
+						
+						insert(tmp, it2.getList()->data);
+						erase(it2);
+					}
+					else
+						tmp++;
+					it2 = tmp;
+					it2++;	
+				}
+				j++;
+			}
+		}
+		
+		// template <class Compare>
+  		// void sort (Compare comp)
+		// {
+		// 	iterator it = begin();
+		// 	iterator it2 = begin();
+		// 	iterator tmp;
+		// 	size_t j = 0;
+		// 	while(j < size())
+		// 	{
+		// 		it2 = begin();
+		// 		tmp = it2;
+		// 		std::cout<< "tmp: "<<*tmp<<" it2: "<<*it2<<std::endl;
+		// 		it2++;
+		// 		while(it2 != end())
+		// 		{
+		// 			std::cout<< "second "<<*it2<<std::endl;
+		// 			if(comp(tmp, it2))
+		// 			{
+						
+		// 				insert(tmp, it2.getList()->data);
+		// 				erase(it2);
+		// 			}
+		// 			else
+		// 				tmp++;
+		// 			it2 = tmp;
+		// 			it2++;	
+		// 		}
+		// 		j++;
+		// 	}
+		// }
+
+		void unique()
+		{
+			iterator it = begin();
+			iterator it2 = begin();
+			while(it != end())
+			{
+				it = it2;
+				it2++;
+				if(*it == *it2)
+					erase(it2);
+				else
+					it++;
+			}
+		}
+
+		// template <class BinaryPredicate>
+		// void unique (BinaryPredicate binary_pred);
+
+		void merge (list& x)
+		{
+			iterator it = begin();
+			iterator it2 = x.begin();
+			iterator tmp = x.end();
+			int flag = 0;
+			size_t i = 0;
+			size_t j = x.size();
+			while(it != end())
+			{
+				if(i < j && it > it2)
+				{
+					insert(it, it2.getList()->data);
+					x.erase(it2);
+					it2 = x.begin();
+					i++;
+				}
+				else
+				{
+						it++;
+						if(it == end())
+						{
+							flag = 1;
+						}
+				}
+			}
+			while(it2 != x.end() && flag == 1)
+			{
+				push_back(it2.getList()->data);
+				it2++;
+			}
+		}
+		// template <class Compare>
+		// void merge (list& x, Compare comp);
+
+		void reverse ()
+		{
+
+			size_t j = 0;
+			iterator it = begin();
+			iterator it2 = end();
+			while(j < size())
+			{
+				it = begin();
+				splice(it2, *this, it);
+				it2--;
+				j++;
+			}
+		}
+
+  		};
 };
 
 #endif

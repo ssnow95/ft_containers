@@ -84,6 +84,15 @@ namespace ft
 				operator--();
 				return tmp;
 			}
+			bool operator>(const iterator &x)
+			{
+				return (list->data > x.list->data);
+			}
+
+			bool operator<(const iterator &x)
+			{
+				return (list->data < x.list->data);
+			}
 
 			struct s_list<T> *getList()
 			{
