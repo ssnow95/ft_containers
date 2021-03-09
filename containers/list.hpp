@@ -7,6 +7,8 @@
 #include <string>
 #include <cstddef>
 #include <limits>
+#include <typeinfo>
+#include <iterator>
 #include "list_iterator.hpp"
 
 namespace ft
@@ -33,9 +35,9 @@ namespace ft
 		size_t									_list_size;
 	public:
 		typedef ft::iterator<T>					iterator;
-		typedef ft::iterator< const T>			const_iterator;
+		typedef ft::iterator<const T>			const_iterator;
 		typedef ft::reverse_iterator<T> 		reverse_iterator;
-		typedef ft::reverse_iterator<const T>	const_reverse_iterator;
+		typedef ft::reverse_iterator<T>	const_reverse_iterator;
 
 		//--------------------constructors------------------------//
 		explicit   								list (const allocator_type& alloc = allocator_type())
@@ -64,7 +66,6 @@ namespace ft
 		// }
 												list (const list& x)
 		{
-			// clear();
 			_tail_lst = new struct s_list<T>;
 			_tail_lst->prev = _tail_lst;
 			_tail_lst->next = _tail_lst;
@@ -109,19 +110,18 @@ namespace ft
 		{
 			return (const_iterator(_tail_lst));
 		}
-		// reverse_iterator						rbegin()
-		// {
-		// 	return (reverse_iterator());
-		// }
+		reverse_iterator						rbegin()
+		{
+			return (reverse_iterator(_tail_lst->prev));
+		}
 		// const_reverse_iterator					rbegin() const
 		// {
 		// 	rreturn (reverse_iterator(_tail_lst));
 		// }
-		// reverse_iterator						rend()
-		// {
-		// 	_list_pointer = _list;
-		// 	return(reverse_iterator(_list_pointer));
-		// }
+		reverse_iterator						rend()
+		{
+			return(reverse_iterator(_tail_lst));
+		}
 		// const_reverse_iterator					rend() const
 		// {
 		// 	_list_pointer = _list;
@@ -161,19 +161,14 @@ namespace ft
 			return (_tail_lst->prev->data);
 		}
 // ******************Element access*********************//
-		// template <class InputIterator>
-		// void 									assign (InputIterator first, InputIterator last)
-		// {
-		// 	_list_size = 0;
-		// 	if (first != last)
-		// 	{
-		// 		while (first != last)
-		// 		{
-		// 			push_back(*first);
-		// 			++first;
-		// 		}
-		// 	}
-		// }
+
+		template <class InputIterator>
+		void 									assign (InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
+		{
+			std::cout<<"i'm here\n";
+			clear();
+			insert(begin(), first, last);
+		}
 		void									assign (size_type n, const value_type& val)
 		{
 			clear();
@@ -285,6 +280,7 @@ namespace ft
 			tmp->prev = newNoda;
 			_list_size++;
 			_tail_lst->data = _list_size;
+			std::cout << newNoda->data<<std::endl;
 			return(position);
 		}
 		void									insert (iterator position, size_type n, const value_type& val)
@@ -294,8 +290,17 @@ namespace ft
 				insert(position, val);
 			}
 		}
-		// template <class InputIterator>
-		// void									insert (iterator position, InputIterator first, InputIterator last);
+		template <class InputIterator>
+		void									insert (iterator position, InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
+		{
+			std::cout << "InputIterator insert\n";
+				
+			for(InputIterator it = first; it != last; it++)
+			{
+				insert(position, *it);
+
+			}
+		}
 		iterator					erase (iterator position)
 		{
 			struct s_list<T>*tmp = position.getList();
@@ -534,11 +539,9 @@ namespace ft
 				}
 				else
 				{
-						it++;
-						if(it == end())
-						{
-							flag = 1;
-						}
+					it++;
+					if(it == end())
+						flag = 1;
 				}
 			}
 			while(it2 != x.end() && flag == 1)
@@ -548,7 +551,36 @@ namespace ft
 			}
 		}
 		// template <class Compare>
-		// void merge (list& x, Compare comp);
+		// void merge (list& x, Compare comp)
+		// {
+		// 	iterator it = begin();
+		// 	iterator it2 = x.begin();
+		// 	iterator tmp = x.end();
+		// 	int flag = 0;
+		// 	size_t i = 0;
+		// 	size_t j = x.size();
+		// 	while(it != end())
+		// 	{
+		// 		if(i < j && it > it2)
+		// 		{
+		// 			insert(it, it2.getList()->data);
+		// 			x.erase(it2);
+		// 			it2 = x.begin();
+		// 			i++;
+		// 		}
+		// 		else
+		// 		{
+		// 			it++;
+		// 			if(it == end())
+		// 				flag = 1;
+		// 		}
+		// 	}
+		// 	while(it2 != x.end() && flag == 1)
+		// 	{
+		// 		push_back(it2.getList()->data);
+		// 		it2++;
+		// 	}
+		// }
 
 		void reverse ()
 		{

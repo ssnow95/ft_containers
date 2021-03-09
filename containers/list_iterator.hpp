@@ -5,6 +5,10 @@
 
 namespace ft
 {
+	// template<typename T>
+	// typename std::enable_if<std::enable_if<std::numeric_limits<T>::is_specialized>::type
+    // foo(const T &bar) { isInt(bar); }
+
 	template<typename T>
 	struct  						s_list
 	{
@@ -15,7 +19,7 @@ namespace ft
 	template<typename T>
 	class iterator
 	{
-		private:
+		protected:
 			struct s_list<T> *list;
 		public:
 			typedef T value_type;
@@ -28,7 +32,7 @@ namespace ft
 
 													iterator(struct s_list<T> *_list){list = _list;}
 			iterator 								&operator=(const struct s_list<T> &x) {if(list != x){list = x;}return list;}
-													~iterator() {}
+			virtual 								~iterator() {}
 			//-----------------------Overlodes-------------------------//
 			bool 									operator==(const iterator &x)
 			{
@@ -99,6 +103,88 @@ namespace ft
 				return(list);
 			}
 		};
+		// template<typename T>
+		// class const_iterator: public iterator
+		// {
+		// 	public:
+		// 											const_iterator():iterator(){}
+		// 											const_iterator(const const_iterator &src): iterator(src){};
+		// 											const_iterator(const struct s_list<T> &src): iterator(src){};
+
+		// 											const_iterator(const struct s_list<T> *_list): iterator(src){}
+		// 	const_iterator 							&operator=(const struct s_list<T> &x) {if(list != x){list = x;}return list;}
+		// 											~const_iterator() {}
+		// 	//-----------------------Overlodes-------------------------//
+		// 	bool 									operator==(const const_iterator &x)
+		// 	{
+		// 		if(list == x.list)
+		// 			return true;
+		// 		else
+		// 			return false;
+		// 	}
+		// 	bool 									operator!=(const const_iterator &x)
+		// 	{
+		// 		if(list != x.list)
+		// 			return true;
+		// 		else
+		// 			return false;			
+		// 	}
+		// 	value_type 										&operator*()
+		// 	{
+		// 		return this->list->data;
+		// 	}
+		// 	const value_type 								&operator*() const
+		// 	{
+		// 		return this->list->data;
+		// 	}
+		// 	pointer										operator->()
+		// 	{
+		// 		return &list->data;
+		// 	}
+		// 	const pointer								operator->() const
+		// 	{
+		// 		return &list->data;
+		// 	}
+		// 	const_iterator							&operator++()
+		// 	{
+		// 		if (list && list->next)
+		// 			list = list->next;
+		// 		return (*this);
+		// 	}
+		// 	const_iterator							operator++(int)
+		// 	{
+		// 		const_iterator tmp(*this);
+		// 		operator++();
+		// 		return tmp;
+		// 	}
+		// 	const_iterator							&operator--()
+		// 	{
+		// 		if (list && list->prev)
+		// 			list = list->prev;
+		// 		return (*this);
+		// 	}
+		// 	const_iterator							operator--(int)
+		// 	{
+		// 		const_iterator tmp(*this);
+		// 		operator--();
+		// 		return tmp;
+		// 	}
+		// 	bool operator>(const const_iterator &x)
+		// 	{
+		// 		return (list->data > x.list->data);
+		// 	}
+
+		// 	bool operator<(const const_iterator &x)
+		// 	{
+		// 		return (list->data < x.list->data);
+		// 	}
+
+		// 	struct s_list<T> *getList()
+		// 	{
+		// 		return(list);
+		// 	}
+		// };
+
 		template<typename T>
 		class reverse_iterator
 		{
