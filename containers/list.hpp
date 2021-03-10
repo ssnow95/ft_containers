@@ -3,7 +3,7 @@
 #define LIST_HPP
 
 #include <iostream>
-# include <memory>
+#include <memory>
 #include <string>
 #include <cstddef>
 #include <limits>
@@ -29,15 +29,13 @@ namespace ft
 		
 	private:
 		allocator_type							_alloc;
-		struct s_list<T>                        *_list;
-		struct s_list<T>                        *_head_lst;
 		struct s_list<T>                        *_tail_lst;
 		size_t									_list_size;
 	public:
 		typedef ft::iterator<T>					iterator;
-		typedef ft::iterator<const T>			const_iterator;
+		typedef ft::const_iterator<T>			const_iterator;
 		typedef ft::reverse_iterator<T> 		reverse_iterator;
-		typedef ft::reverse_iterator<T>	const_reverse_iterator;
+		typedef ft::const_reverse_iterator<T>	const_reverse_iterator;
 
 		//--------------------constructors------------------------//
 		explicit   								list (const allocator_type& alloc = allocator_type())
@@ -61,9 +59,20 @@ namespace ft
 			for(size_type i = 0; i < n; i++)
 				push_back(val);
 		}
-		// template <class InputIterator>			list (InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type())
-		// {
-		// }
+		template <class InputIterator>			list (InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type(),
+														typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
+		{
+			_alloc = alloc;
+			_tail_lst = new struct s_list<T>;
+			_tail_lst->prev = _tail_lst;
+			_tail_lst->next = _tail_lst;
+			_tail_lst->data = 0;
+			_list_size = 0;
+			for(; first != last; first++)
+			{
+				push_back(first.getList()->data);
+			}
+		}
 												list (const list& x)
 		{
 			_tail_lst = new struct s_list<T>;
@@ -76,6 +85,7 @@ namespace ft
 		{
 
 			clear();
+			delete _tail_lst;
 		}
 		list&									operator=(const list& x)
 		{
@@ -114,19 +124,18 @@ namespace ft
 		{
 			return (reverse_iterator(_tail_lst->prev));
 		}
-		// const_reverse_iterator					rbegin() const
-		// {
-		// 	rreturn (reverse_iterator(_tail_lst));
-		// }
+		const_reverse_iterator					rbegin() const
+		{
+			return (const_reverse_iterator(_tail_lst->prev));
+		}
 		reverse_iterator						rend()
 		{
 			return(reverse_iterator(_tail_lst));
 		}
-		// const_reverse_iterator					rend() const
-		// {
-		// 	_list_pointer = _list;
-		// 	return(const_reverse_iterator(_list_pointer));
-		// }
+		const_reverse_iterator					rend() const
+		{
+			return(const_reverse_iterator(_tail_lst));
+		}
 		// ******************Capacity*********************//
 		bool									empty() const
 		{
@@ -165,9 +174,9 @@ namespace ft
 		template <class InputIterator>
 		void 									assign (InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
 		{
-			std::cout<<"i'm here\n";
+			
 			clear();
-			insert(begin(), first, last);
+			insert(begin(),first, last);
 		}
 		void									assign (size_type n, const value_type& val)
 		{
@@ -280,7 +289,6 @@ namespace ft
 			tmp->prev = newNoda;
 			_list_size++;
 			_tail_lst->data = _list_size;
-			std::cout << newNoda->data<<std::endl;
 			return(position);
 		}
 		void									insert (iterator position, size_type n, const value_type& val)
@@ -292,14 +300,9 @@ namespace ft
 		}
 		template <class InputIterator>
 		void									insert (iterator position, InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
-		{
-			std::cout << "InputIterator insert\n";
-				
+		{	
 			for(InputIterator it = first; it != last; it++)
-			{
 				insert(position, *it);
-
-			}
 		}
 		iterator					erase (iterator position)
 		{
@@ -358,6 +361,7 @@ namespace ft
 		{		
 				if(_tail_lst->next)
 				{
+					
 					struct s_list<T>*tmp = _tail_lst->next;
 					size_t i = 0;
 					while(i < _list_size)
@@ -380,7 +384,6 @@ namespace ft
 			{
 				struct s_list<T>* tmp = new struct s_list<T>;          
 				tmp->data = x._tail_lst->prev->data;
-				std::cout<< tmp->data<<std::endl;
 				tmp->prev = tmpIter->prev;
 				tmp->next = tmpIter;
 				tmpIter->prev->next = tmp;
@@ -398,7 +401,6 @@ namespace ft
 			struct s_list<T>* tmp = new struct s_list<T>;
 			iterator it = x.begin();
 			tmp->data = i.getList()->data;
-			std::cout<< tmp->data<<std::endl;
 			tmp->prev = tmpIter->prev;
 			tmp->next = tmpIter;
 			tmpIter->prev->next = tmp;
@@ -438,9 +440,20 @@ namespace ft
 					erase(iterator(tmp));
 				}
 				tmp = tmp->next;
-				std::cout<< "hi\n";
 			}
 			
+		}
+
+		template <class Predicate>
+  		void remove_if (Predicate pred)
+		{
+			struct s_list<T>* tmp = _tail_lst->next;
+			while(tmp != _tail_lst)
+			{
+				if(pred(tmp->data))
+					erase(tmp);
+				tmp = tmp->next;
+			}
 		}
 
 		void sort()
@@ -471,36 +484,34 @@ namespace ft
 			}
 		}
 		
-		// template <class Compare>
-  		// void sort (Compare comp)
-		// {
-		// 	iterator it = begin();
-		// 	iterator it2 = begin();
-		// 	iterator tmp;
-		// 	size_t j = 0;
-		// 	while(j < size())
-		// 	{
-		// 		it2 = begin();
-		// 		tmp = it2;
-		// 		std::cout<< "tmp: "<<*tmp<<" it2: "<<*it2<<std::endl;
-		// 		it2++;
-		// 		while(it2 != end())
-		// 		{
-		// 			std::cout<< "second "<<*it2<<std::endl;
-		// 			if(comp(tmp, it2))
-		// 			{
+		template <class Compare>
+  		void sort (Compare comp)
+		{
+			iterator it = begin();
+			iterator it2 = begin();
+			iterator tmp;
+			size_t j = 0;
+			while(j < size())
+			{
+				it2 = begin();
+				tmp = it2;
+				it2++;
+				while(it2 != end())
+				{
+					if(comp(it2.getList()->data, tmp.getList()->data))
+					{
 						
-		// 				insert(tmp, it2.getList()->data);
-		// 				erase(it2);
-		// 			}
-		// 			else
-		// 				tmp++;
-		// 			it2 = tmp;
-		// 			it2++;	
-		// 		}
-		// 		j++;
-		// 	}
-		// }
+						insert(tmp, it2.getList()->data);
+						erase(it2);
+					}
+					else
+						tmp++;
+					it2 = tmp;
+					it2++;	
+				}
+				j++;
+			}
+		}
 
 		void unique()
 		{
@@ -517,8 +528,21 @@ namespace ft
 			}
 		}
 
-		// template <class BinaryPredicate>
-		// void unique (BinaryPredicate binary_pred);
+		template <class BinaryPredicate>
+		void unique (BinaryPredicate binary_pred)
+		{
+			iterator it = begin();
+			iterator it2 = begin();
+			while(it != end())
+			{
+				it = it2;
+				it2++;
+				if(binary_pred(it.getList()->data, it2.getList()->data))
+					erase(it2);
+				else
+					it++;
+			}
+		}
 
 		void merge (list& x)
 		{
@@ -550,37 +574,38 @@ namespace ft
 				it2++;
 			}
 		}
-		// template <class Compare>
-		// void merge (list& x, Compare comp)
-		// {
-		// 	iterator it = begin();
-		// 	iterator it2 = x.begin();
-		// 	iterator tmp = x.end();
-		// 	int flag = 0;
-		// 	size_t i = 0;
-		// 	size_t j = x.size();
-		// 	while(it != end())
-		// 	{
-		// 		if(i < j && it > it2)
-		// 		{
-		// 			insert(it, it2.getList()->data);
-		// 			x.erase(it2);
-		// 			it2 = x.begin();
-		// 			i++;
-		// 		}
-		// 		else
-		// 		{
-		// 			it++;
-		// 			if(it == end())
-		// 				flag = 1;
-		// 		}
-		// 	}
-		// 	while(it2 != x.end() && flag == 1)
-		// 	{
-		// 		push_back(it2.getList()->data);
-		// 		it2++;
-		// 	}
-		// }
+		template <class Compare>
+		void merge (list& x, Compare comp)
+		{
+			iterator it = begin();
+			iterator it2 = x.begin();
+			iterator tmp = x.end();
+			int flag = 0;
+			size_t i = 0;
+			size_t j = x.size();
+			while(it != end())
+			{
+				if(i < j && comp(it2.getList()->data, it.getList()->data))
+				{
+					insert(it, it2.getList()->data);
+					x.erase(it2);
+					it2 = x.begin();
+					i++;
+				}
+				else
+				{
+					it++;
+					if(it == end())
+						flag = 1;
+				}
+			}
+			while(it2 != x.end() && flag == 1)
+			{
+				push_back(it2.getList()->data);
+				it2++;
+			}
+		}
+
 
 		void reverse ()
 		{
