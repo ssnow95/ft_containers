@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   list.hpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/03/11 11:57:31 by ssnowbir          #+#    #+#             */
+/*   Updated: 2021/03/16 15:31:40 by ssnowbir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #ifndef LIST_HPP
 #define LIST_HPP
@@ -16,8 +28,7 @@ namespace ft
   template < class T, class Alloc = std::allocator<T> >
   class list
   {
-	  public:
-		public:
+	public:
 		typedef  T  							value_type;
 		typedef Alloc 							allocator_type;
 		typedef size_t 							size_type;
@@ -59,7 +70,8 @@ namespace ft
 			for(size_type i = 0; i < n; i++)
 				push_back(val);
 		}
-		template <class InputIterator>			list (InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type(),
+		template <class InputIterator>			
+		list (InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type(),
 														typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
 		{
 			_alloc = alloc;
@@ -621,8 +633,130 @@ namespace ft
 				j++;
 			}
 		}
-
   		};
-};
+		template <class T, class Alloc>
+		bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() == rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data != it2.getList()->data)
+						return (false);
+					it++;
+					it2++;
+				}
+				return(true);
+			}
+			else
+				return(false);
+		}
+		template <class T, class Alloc>
+		bool operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() == rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data != it2.getList()->data)
+						return (true);
+					it++;
+					it2++;
+				}
+				return(false);
+			}
+			else
+				return(true);
+		}
+		template <class T, class Alloc>
+		bool operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() == rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data != it2.getList()->data)
+						return (it.getList()->data < it2.getList()->data);
+					it++;
+					it2++;
+				}
+				return(false);
+			}
+			else
+				return(lhs.size() < rhs.size());
+		}
+		template <class T, class Alloc>
+		bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() > rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data > it2.getList()->data)
+						return (it.getList()->data > it2.getList()->data);
+					it++;
+					it2++;
+				}
+				return(false);
+			}
+			else
+				return(lhs.size() <= rhs.size());
+		}
+		template <class T, class Alloc>
+		bool operator>  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() <= rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data > it2.getList()->data)
+						return (true);
+					it++;
+					it2++;
+				}
+				return(true);
+			}
+			else
+				return(true);
+		}
+		template <class T, class Alloc>
+		bool operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() < rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data < it2.getList()->data)
+						return (it.getList()->data < it2.getList()->data);
+					it++;
+					it2++;
+				}
+				return(false);
+			}
+			else
+				return(lhs.size() >= rhs.size());
+		}
+
+		template <class T, class Alloc>
+		void swap(list<T, Alloc> &x, list <T, Alloc> &y)
+		{
+			x.swap(y);
+		}
+		
+		};
+
+
 
 #endif
