@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 11:57:47 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/20 18:30:13 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/03/22 15:00:55 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,11 +134,16 @@ namespace ft
 				}
 				_last_cell_mem = _size_vector;
 			}
-			// ~vector()
-			// {
-			// 	if (_last_cell_mem > 0)                       //ХЗ решить если раскоментить падает swap
-			// 		_alloc.deallocate(_arr, _last_cell_mem);
-			// }
+			~vector()
+			{
+				if (_last_cell_mem > 0)
+				{                   //ХЗ решить если раскоментить падает swap
+					_alloc.deallocate(_arr, _last_cell_mem);
+					std::cout << "DELETE: _last_cell_mem:"<< _last_cell_mem<<std::endl;
+				}
+				_last_cell_mem = 0;
+				_size_vector = 0;
+			}
 			template <class InputIterator>
 			vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 										typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
@@ -540,12 +545,11 @@ namespace ft
 			void swap (vector& x)
 			{
 				// std::cout<<  _size_vector<<std::endl;
-				ft::vector<T> tmp;
-				tmp._size_vector = _size_vector;
-				tmp._last_cell_mem = _last_cell_mem;
-				tmp._arr = _arr;
-				tmp._start = &tmp._arr[0];
-				tmp._finish = &tmp._arr[_size_vector];
+				size_t size_vector = _size_vector;
+				size_t last_cell_mem = _last_cell_mem;
+				T *arr = _arr;
+				// T *start = _arr;
+				// T *finish = &_arr[_size_vector];
 
 				_size_vector = x._size_vector;
 				_last_cell_mem = x._last_cell_mem;
@@ -553,10 +557,11 @@ namespace ft
 				_start = &_arr[0];
 				_finish = &_arr[_size_vector];
 
-				x._size_vector = tmp._size_vector;
-				x._last_cell_mem = tmp._last_cell_mem;
-				x._arr = tmp._arr;
-				x._start = &x._arr[0];
+				x._size_vector = size_vector;
+				x._last_cell_mem = last_cell_mem;
+				x._arr = arr;
+				x._start =&x._arr[0];
+				std::cout << *x._start<<", "<<  x._arr[0]<<std::endl;
 				x._finish = &x._arr[_size_vector];	
 			}
 

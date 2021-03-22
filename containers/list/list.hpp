@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 11:57:31 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/16 15:31:40 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/03/20 13:32:18 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -633,7 +633,7 @@ namespace ft
 				j++;
 			}
 		}
-  		};
+};
 		template <class T, class Alloc>
 		bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 		{
@@ -755,7 +755,7 @@ namespace ft
 			x.swap(y);
 		}
 		
-		};
+};
 
 
 
