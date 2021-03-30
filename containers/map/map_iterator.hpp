@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/23 17:00:21 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/26 21:46:02 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/03/29 21:41:14 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,14 @@ namespace ft
 					return(true);
 				return(false);
 			}
-			// value_type 								&operator*()
-			// {
-			// 	return (_map->key_value);
-			// }
-			// const value_type 						&operator*() const
-			// {
-			// 	return (_map->key_value);	
-			// }	
+			value_type 								&operator*()
+			{
+				return (_map->key_value);
+			}
+			const value_type 						&operator*() const
+			{
+				return (_map->key_value);	
+			}	
 			pointer									operator->()
 			{
 				return (&(this->_map->key_value));	
@@ -85,10 +85,21 @@ namespace ft
 					while(tmp->left)
 						tmp = tmp->left;
 				}
+				else if(_map->right == nullptr && _map->parent && _map->key_value.first > _map->parent->key_value.first)
+				{
+					tmp = _map;
+					struct s_map<Key,T> *tmp2 = _map->parent;
+					while(tmp2 && tmp2->key_value.first < tmp->key_value.first)
+					{
+						tmp2 = tmp2->parent;
+					}
+					tmp = tmp2;
+				}
 				else if(_map->right == nullptr && _map->parent && _map->key_value.first < _map->parent->key_value.first)
 				{
 					tmp = _map;
 					tmp = tmp->parent;
+					
 				}
 				else if (_map->right == nullptr)
 				{
@@ -110,35 +121,58 @@ namespace ft
 				else
 				    return ("\x1b[31m");	
 			}
-			
+
 			// map_iterator							&operator--()
 			// {
-			// 	struct s_map<Key,T> tmp;
-			// 	if(_map)
-			// 	{
-			// 		if(_map->left)
-			// 		{
-			// 			tmp = _map->left;
-			// 			while(tmp->right)
-			// 				tmp = tmp->right;
-			// 		}
-			// 		else
-			// 		{
-			// 			if(_map->parent)
-			// 				tmp = _map->parent;	
-			// 		}
-			// 		_map = tmp;
+			// 	if (!_map && !_map->parent)
 			// 		return (*this);
+			// 	struct s_map<Key,T> *tmp = _map;
+			// 	if(_map->right)
+			// 	{
+			// 		tmp = _map->right;
+			// 		while(tmp->left)
+			// 			tmp = tmp->left;
 			// 	}
-			// 	else
-			// 		return ;
+			// 	else if(_map->right == nullptr && _map->parent && _map->key_value.first < _map->parent->key_value.first)
+			// 	{
+			// 		tmp = _map;
+			// 		tmp = tmp->parent;
+			// 	}
+			// 	else if (_map->right == nullptr)
+			// 	{
+			// 		tmp = _map->right;
+			// 	}
+			// 	_map = tmp;
+			// 	return (*this);				
 			// }
-			// map_iterator							operator--(int)
-			// {
-			// 	map_iterator tmp(*this);
-			// 	operator--();
-			// 	return tmp;
-			// }
+			
+			map_iterator							&operator--()
+			{
+				if (_map && _map->right == nullptr)
+				{
+					_map = _map->parent;
+					return(*this);
+				}
+				struct s_map<Key,T> *tmp = _map;
+				if(_map->left)
+				{
+					tmp = _map->left;
+					while (tmp->right)
+						tmp = tmp->right;
+				}
+				else if(_map->parent && _map->key_value.first > _map->parent->key_value.first)
+				{
+					tmp = tmp->parent;
+				}
+				_map = tmp;
+				return (*this);
+			}
+			map_iterator							operator--(int)
+			{
+				map_iterator tmp(*this);
+				operator--();
+				return tmp;
+			}
 			// difference_type							operator+(map_iterator const &other)
 			// {
 			// 	map_iterator ptr;
