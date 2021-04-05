@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/22 13:30:22 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/22 17:39:28 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/05 15:23:14 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,68 +24,112 @@ namespace ft
 	template <class T, class Container = std::deque<T> >
 	class queue
 	{
-	public:
-		typedef T	value_type;
-		typedef Container	container_type;
-		typedef size_t	size_type;
+		public:
+			typedef T	value_type;
+			typedef Container	container_type;
+			typedef size_t	size_type;
 
-	private:
-		container_type	_myqueue;
-	public:
-		explicit queue (const container_type& ctnr = container_type())
-		{
-			_myqueue = ctnr;
-		}
+		private:
+			container_type	_myqueue;
+		public:
+			explicit queue (const container_type& ctnr = container_type())
+			{
+				_myqueue = ctnr;
+			}
 
-		// queue(const queue &copy)
-		// {
-		// 	*this = copy;
-		// 	return ;
-		// }
+			// queue(const queue &copy)
+			// {
+			// 	*this = copy;
+			// 	return ;
+			// }
 
-		queue& operator= (const queue& x)
-		{
-			*this->_myqueue = x._myqueue;
-			return (*this);
-		}
+			queue& operator= (const queue& x)
+			{
+				*this->_myqueue = x._myqueue;
+				return (*this);
+			}
 
-		size_type size() const
-		{
-			return(_myqueue.size());
-		}
-		
-		bool empty() const
-		{
-			return(_myqueue.empty());
-		}
+			size_type size() const
+			{
+				return(_myqueue.size());
+			}
+			
+			bool empty() const
+			{
+				return(_myqueue.empty());
+			}
 
-		value_type& front()
-		{
-			return (_myqueue.front());
-		}
-		const value_type& front() const
-		{
-			return (_myqueue.front());
-		}
-		value_type& back()
-		{
-			return (_myqueue.back());
-		}
-		const value_type& back() const
-		{
-			return (_myqueue.back());
-		}
+			value_type& front()
+			{
+				return (_myqueue.front());
+			}
+			const value_type& front() const
+			{
+				return (_myqueue.front());
+			}
+			value_type& back()
+			{
+				return (_myqueue.back());
+			}
+			const value_type& back() const
+			{
+				return (_myqueue.back());
+			}
 
-		void push (const value_type& val)
-		{
-			return (_myqueue.push_back(val));
-		}
+			void push (const value_type& val)
+			{
+				return (_myqueue.push_back(val));
+			}
 
-		void pop()
-		{
-			return (_myqueue.pop_front());
-		}
+			void pop()
+			{
+				return (_myqueue.pop_front());
+			}
+			
+			friend bool operator==(const queue<T, Container> &lhs, const queue<T, Container> &rhs)
+			{
+				if(lhs._myqueue == rhs._myqueue)
+					return (true);
+				else
+					return (false);
+			}
+			friend bool operator!= (const queue<T,Container>& lhs, const queue<T,Container>& rhs)
+			{
+				if(lhs._myqueue != rhs._myqueue)
+					return (true);
+				else
+					return (false);
+			}
+			friend bool operator<  (const queue<T,Container>& lhs, const queue<T,Container>& rhs)
+			{
+				if(lhs._myqueue < rhs._myqueue)
+					return (true);
+				else
+					return (false);
+			}
+			friend bool operator<= (const queue<T,Container>& lhs, const queue<T,Container>& rhs)
+			{
+				if(lhs._myqueue <= rhs._myqueue)
+					return (true);
+				else
+					return (false);
+			}
+			friend bool operator>  (const queue<T,Container>& lhs, const queue<T,Container>& rhs)
+			{
+				if(lhs._myqueue > rhs._myqueue)
+					return (true);
+				else
+					return (false);
+			}
+			friend bool operator>= (const queue<T,Container>& lhs, const queue<T,Container>& rhs)
+			{
+				if(lhs._myqueue >= rhs._myqueue)
+					return (true);
+				else
+					return (false);
+			}
 	};
+
 };
 
 #endif

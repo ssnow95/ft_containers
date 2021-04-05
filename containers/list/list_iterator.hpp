@@ -6,12 +6,12 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 11:57:40 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/11 11:57:44 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/03 17:54:53 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ITERATOR_LIST_HPP
-#define ITERATOR_LIST_HPP
+#ifndef LIST_ITERATOR_HPP
+#define  LIST_ITERATOR_HPP
 
 #include "list.hpp"
 
@@ -34,6 +34,7 @@ namespace ft
 			typedef T value_type;
 			typedef T &reference;
 			typedef T *pointer;
+			typedef std::ptrdiff_t difference_type;
 			public:
 													iterator(){}
 													iterator(const iterator &src){*this = src;}
@@ -85,6 +86,12 @@ namespace ft
 				operator++();
 				return tmp;
 			}
+
+			difference_type						operator-(iterator const &other)
+			{
+				return (this->list - other.list);
+			}
+			
 			iterator							&operator--()
 			{
 				if (list && list->prev)

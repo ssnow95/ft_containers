@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/23 16:54:57 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/04/04 15:18:59 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/05 15:21:48 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,24 +102,14 @@ namespace ft
 				Node *y = node->right;
 				node->right = y->left;
 				if (y->left != nullptr)
-				{
 					y->left->parent = node;
-				}
 				y->parent = node->parent;
 				if (node->parent == nullptr)
-				{
 					_root = y;
-				}
 				else if (node == node->parent->left)
-				{
 					node->parent->left = y;
-					// y = node->parent;
-				}
 				else
-				{
 					node->parent->right = y;
-					// y = node->parent;
-				}
 				y->left = node;
 				node->parent = y;
 			}
@@ -129,24 +119,14 @@ namespace ft
 			 	Node *y = node->left;
 				node->left = y->right;
 				if (y->right != nullptr)
-				{
 					y->right->parent = node;
-				}
 				y->parent = node->parent;
 				if (node->parent == nullptr)
-				{
 					_root = y;
-				}
 				else if (node == node->parent->right)
-				{
 					node->parent->right = y;
-					// y = node->parent;
-				}
 				else
-				{
 					node->parent->left = y;
-					// y = node->parent;
-				}
 				y->right = node;
 				node->parent = y;
 			}
@@ -173,7 +153,6 @@ namespace ft
 					return ;
 				clear(position->left);
 				clear(position->right);
-				// std::cout << "*** DELETE " << position->key_value.first << " ***" << std::endl;
 				delete position;
 				_size_map--;
 			}
@@ -334,7 +313,6 @@ namespace ft
 				if (node)
 					node->parent = nodeToBeDeleted->parent;
 			}
-			// For balancing the tree after deletion
             void deleteFix(Node *x)
 				{
 					Node *s;
@@ -496,6 +474,7 @@ namespace ft
 			{
 				_tail = new Node();
 				_begin = new Node();
+				_size_map = 0;
 				*this = x;	
 			}
 
@@ -504,10 +483,13 @@ namespace ft
 
 				clear();
 				delete _tail;
+				delete _begin;
 			}
 			
 			map&									operator=(const map& x)
 			{
+				if(_tail != nullptr || _begin != nullptr)
+					this->clear();
 				_start = nullptr;
 				_root = nullptr;
 				_size_map = 0;
@@ -526,7 +508,7 @@ namespace ft
 				_tail->color = TAIL;
 				_finish = nullptr;
 				_size_map = 0;
-				this->clear();
+
 				if(x._size_map > 0)
 					insert(x.begin(), x.end());
 				return *this;
@@ -668,12 +650,10 @@ namespace ft
 							if(parentNewNode->left == nullptr)
 								parentNewNode->left = newMap;
 							else
-							{
 								if(parentNewNode->left->key_value.first > newMap->key_value.first)
 									newMap->right = parentNewNode->left;
 								else
 									newMap->left = parentNewNode->left;
-							}
 							if(newMap->key_value.first < _start->key_value.first)
 							{
 								_start = newMap;
@@ -682,17 +662,11 @@ namespace ft
 						}
 						insertFix(newMap);
 						_tail->color = 2;
-						// std::cout << "1:"<< newMap->key_value.first<< ", "<<newMap->key_value.second<<std::endl;
 						return std::make_pair(iterator(newMap), true);
 					}
 					else
-					{
-						// std::cout << "2:"<< parentNewNode->key_value.first<< ", "<<parentNewNode->key_value.second<<std::endl;
 						return std::make_pair(iterator(parentNewNode), false);
-					}
-
 				}
-				// std::cout << "3:"<< _root->key_value.first<< ", "<<_root->key_value.second<<std::endl;
 				return std::make_pair(iterator(_root), true);
 			}
 			
@@ -720,9 +694,7 @@ namespace ft
 						if(val.first > parentNewNode->key_value.first)
 						{
 							if(parentNewNode->right == nullptr || parentNewNode->right == _tail)
-							{
 								parentNewNode->right = newMap;
-							}
 							else
 							{
 								
@@ -758,16 +730,11 @@ namespace ft
 						}
 						insertFix(newMap);
 						_tail->color = 2;
-						std::cout << "1:"<< newMap->key_value.first<< ", "<<newMap->key_value.second<<std::endl;
 						return iterator(newMap);
 					}
 					else
-					{
-						std::cout << "2:"<< parentNewNode->key_value.first<< ", "<<parentNewNode->key_value.second<<std::endl;
 						return iterator(parentNewNode);
-					}
 				}
-				std::cout << "3:"<< _root->key_value.first<< ", "<<_root->key_value.second<<std::endl;
 				return iterator(_root);
 			}
 			template <class InputIterator>
@@ -815,9 +782,7 @@ namespace ft
                         node = y->right;
 
                         if (y->parent == nodeToBeDeleted)
-                        {
                             node->parent = y;
-                        }
                         else
                         {
                             rbTransplant(y, y->right);
@@ -830,9 +795,8 @@ namespace ft
                         y->left->parent = y;
                         y->color = nodeToBeDeleted->color;
                     }
-                    if (originalColor == BLACK) {
+                    if (originalColor == BLACK)
                         deleteFix(node);
-                    }
 					_tail->color = TAIL;
 					delete nodeToBeDeleted;
 					_size_map--;
@@ -845,7 +809,6 @@ namespace ft
                     
                     if (findNoda == nullptr || findNoda == _tail)
                         return 0;
-
                     erase (iterator(findNoda));
                     return 1;
                 }
@@ -967,7 +930,6 @@ namespace ft
 							src = src->left;
 						for(;src->key_value.first < k && src->right; flag++)
 							src = src->right;
-						// std::cout<< src->key_value.first<< ", "<< src->key_value.second<<std::endl;
 						if(src->key_value.first == k)
 							return (const_iterator(src));
 						else
@@ -975,7 +937,6 @@ namespace ft
 					}
 					
 				}
-				// std::cout<< src->key_value.first<< ", "<< src->key_value.second<<std::endl;
 				if(src->key_value.first == k)
 					return (const_iterator(src));
 				else

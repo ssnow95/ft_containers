@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/23 17:00:21 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/04/03 18:59:40 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/05 15:29:56 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,27 +128,27 @@ namespace ft
 			{
 				struct s_map<Key,T> *it = _map;
 				
-				if (it->color == 2) // extra
+				if (it->color == 2) 
 				{
-				it = it->parent;
+					it = it->parent;
 				}
-				else if (it->left) // case 1
+				else if (it->left)
 				{
-				it = it->left;
-				while (it->right)
-					it = it->right;
+					it = it->left;
+					while (it->right)
+						it = it->right;
 				}
-				else if (it->left == nullptr && it->parent && it->key_value.first > it->parent->key_value.first) // case 2
+				else if (it->left == nullptr && it->parent && it->key_value.first > it->parent->key_value.first) 
 				{
-				it = it->parent;
+					it = it->parent;
 				}
-				else if (it->left == nullptr && it->parent && it->parent->parent) // case 3
+				else if (it->left == nullptr && it->parent && it->parent->parent) 
 				{
-				while (it->parent && it->key_value.first < it->parent->key_value.first)
-				it = it->parent;
-				it = it->parent;
+					while (it->parent && it->key_value.first < it->parent->key_value.first)
+						it = it->parent;
+					it = it->parent;
 				}
-				else if (it->left == nullptr) // case 4
+				else if (it->left == nullptr)
 				it = it->left;
 				this->_map = it;
 				return (*this);
@@ -252,7 +252,7 @@ namespace ft
 			{
 				return (&_map->key_value);	
 			}
-			reverse_map_iterator							&operator--()
+			reverse_map_iterator					&operator--()
 			{
 				if (!_map)
 					return (*this);
@@ -286,13 +286,13 @@ namespace ft
 				_map = tmp;
 				return (*this);				
 			}
-			reverse_map_iterator							operator--(int)
+			reverse_map_iterator					operator--(int)
 			{
 				reverse_map_iterator tmp(*this);
 				operator--();
 				return tmp;
 			}
-			std::string getColor()
+			std::string 							getColor()
 			{
 				if(_map->color == 0)
 					return ("\x1b[34m");
@@ -302,37 +302,37 @@ namespace ft
 				    return ("\x1b[31m");	
 			}
 			
-			reverse_map_iterator       &operator++()
+			reverse_map_iterator      			 &operator++()
 			{
 				struct s_map<Key,T> *it = _map;
 				
-				if (it->color == 2) // extra
+				if (it->color == 2) 
 				{
 				it = it->parent;
 				}
-				else if (it->left) // case 1
+				else if (it->left)
 				{
 				it = it->left;
 				while (it->right)
 					it = it->right;
 				}
-				else if (it->left == nullptr && it->parent && it->key_value.first > it->parent->key_value.first) // case 2
+				else if (it->left == nullptr && it->parent && it->key_value.first > it->parent->key_value.first)
 				{
 				it = it->parent;
 				}
-				else if (it->left == nullptr && it->parent && it->parent->parent) // case 3
+				else if (it->left == nullptr && it->parent && it->parent->parent)
 				{
 				while (it->parent && it->key_value.first < it->parent->key_value.first)
 				it = it->parent;
 				it = it->parent;
 				}
-				else if (it->left == nullptr) // case 4
+				else if (it->left == nullptr) 
 				it = it->left;
 				this->_map = it;
 				return (*this);
 			}
 
-			reverse_map_iterator							operator++(int)
+			reverse_map_iterator					operator++(int)
 			{
 				reverse_map_iterator tmp(*this);
 				operator++();

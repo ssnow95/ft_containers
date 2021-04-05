@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 11:57:50 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/19 19:53:28 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/05 19:40:47 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,169 +19,7 @@ namespace ft
 {
 
 	template<typename T>
-	// class vector_iterator
-	// {
-	// public:
-	// 	typedef T value_type;
-	// 	typedef T &reference;
-	// 	typedef T *pointer;
-
-	// 	typedef std::ptrdiff_t difference_type;
-
-	// protected:
-	// 	pointer	point;
-
-	// public:
-
-	// 	vector_iterator() {}
-
-	// 	vector_iterator(const vector_iterator &it)
-	// 	{
-	// 		*this = it;
-	// 	}
-
-	// 	vector_iterator &operator=(const vector_iterator &target)
-	// 	{
-	// 		point = target.point;
-	// 		return (*this);
-	// 	}
-
-	// 	vector_iterator(pointer ptr)
-	// 	{
-	// 		point = ptr;
-	// 	}
-
-	// 	~vector_iterator() {}
-
-	// 	vector_iterator &operator++()
-	// 	{
-	// 		point++;
-	// 		return (*this);
-	// 	}
-
-	// 	vector_iterator operator++(int)
-	// 	{
-	// 		vector_iterator ptr(*this);
-	// 		operator++();
-	// 		return (ptr);
-	// 	}
-
-	// 	vector_iterator &operator--()
-	// 	{
-	// 		point--;
-	// 		return (*this);
-	// 	}
-		
-
-
-	// 	vector_iterator operator--(int)
-	// 	{
-	// 		vector_iterator ptr(*this);
-	// 		operator--();
-	// 		return (ptr);
-	// 	}
-
-  	// 	bool operator==(const vector_iterator &target) const
-	// 	{
-	// 		return (point == target.point);
-	// 	}
-
-  	// 	bool operator!=(const vector_iterator &target) const
-	// 	{
-	// 		return (point != target.point);
-	// 	}
-
-	// 	T &operator*()
-	// 	{
-	// 		return (*point);
-	// 	}
-
-	// 	T *operator->()
-	// 	{
-	// 		return (point);
-	// 	}
-
-	// 	vector_iterator operator+(int target) const
-	// 	{
-	// 		vector_iterator ptr(*this);
-
-	// 		ptr += target;
-	// 		return (ptr);
-	// 	}
-
-	// 	vector_iterator operator-(int target) const
-	// 	{
-	// 		vector_iterator ptr(*this);
-
-	// 		ptr -= target;
-	// 		return (ptr);
-	// 	}
-
-	// 	bool operator<(const vector_iterator &target) const
-	// 	{
-	// 		return (point < target.point);
-	// 	}
-
-	// 	bool operator<=(const vector_iterator &target) const
-	// 	{
-	// 		return (point <= target.point);
-	// 	}
-
-	// 	bool operator>(const vector_iterator &target) const
-	// 	{
-	// 		return (point > target.point);
-	// 	}
-
-	// 	bool operator>=(const vector_iterator &target) const
-	// 	{
-	// 		return (point >= target.point);
-	// 	}
-
-	// 	vector_iterator &operator+=(int target)
-	// 	{
-	// 		while (target < 0)
-	// 		{
-	// 			target++;
-	// 			operator--();
-	// 		}
-	// 		while (target > 0)
-	// 		{
-	// 			target--;
-	// 			operator++();
-	// 		}
-	// 		return (*this);
-	// 	}
-
-	// 	vector_iterator &operator-=(int target)
-	// 	{
-	// 		while (target < 0)
-	// 		{
-	// 			target++;
-	// 			operator++();
-	// 		}
-	// 		while (target > 0)
-	// 		{
-	// 			target--;
-	// 			operator--();
-	// 		}
-	// 		return (*this);
-	// 	}
-	// 	difference_type						operator-(vector_iterator const &other)
-	// 		{
-	// 			point++;
-	// 			return (this->point - other.point);
-	// 		}
-
-	// 	T &operator[](int target) const
-	// 	{
-	// 		return (*(*this + target));
-	// 	}
-
-	// 	pointer	getArr() const
-	// 	{
-	// 		return (point);
-	// 	}
-	// };
+	
 	class vector_iterator
 	{
 		
@@ -243,7 +81,11 @@ namespace ft
 
 			difference_type						operator-(vector_iterator const &other)
 			{
-				//arr++;
+				return (this->arr - other.arr);
+			}
+
+			difference_type						operator+(vector_iterator const &other)
+			{
 				return (this->arr - other.arr);
 			}
 
@@ -257,19 +99,11 @@ namespace ft
 				arr -= n;
 			};
 
-			vector_iterator operator + (difference_type n)
-			{
-				vector_iterator ptr;
-
-				ptr.arr = arr + n;
-				return (ptr);
-			};
-
-			// vector_iterator operator - (difference_type n)
+			// vector_iterator operator + (difference_type n)
 			// {
 			// 	vector_iterator ptr;
 
-			// 	ptr.arr = arr - n;
+			// 	ptr.arr = arr + n;
 			// 	return (ptr);
 			// };
 			
@@ -304,6 +138,25 @@ namespace ft
 			{
 				return(arr);
 			}
+
+			value_type &operator[](const size_t &x)
+			{
+				return *(arr + x); 
+			}
+  			const value_type &operator[](const size_t &x) const
+			{ 
+				return *(arr + x); 
+			}
+
+			vector_iterator operator+(const size_t &x)
+			{
+				return (this->arr + x);
+			}
+  			vector_iterator operator-(const size_t &x)
+			{
+				return (this->arr - x);
+			}
+
 		};
 		template <class T>
 		class const_vector_iterator : public vector_iterator<T>
@@ -333,7 +186,8 @@ namespace ft
 			{
 				return (*this->arr);
 			}
-		};
+
+	};
 
 	template<typename T>
 	class reverse_vector_iterator
@@ -343,15 +197,15 @@ namespace ft
 			typedef T value_type;
 			typedef T &reference;
 			typedef T *pointer;
+			typedef std::ptrdiff_t difference_type;
 		protected:
 			pointer arr;
 			public:
 													reverse_vector_iterator(){}
 													reverse_vector_iterator(const reverse_vector_iterator &src){*this = src;}
-													reverse_vector_iterator(pointer &src){arr = src;};
+													reverse_vector_iterator(pointer src){arr = src;};
 
-													reverse_vector_iterator(pointer *_arr){arr = _arr;}
-			reverse_vector_iterator 						&operator=(const pointer &x) {if(arr != x){arr = x;}return *this;}
+			reverse_vector_iterator 						&operator=(const T &x) {if(arr != x){arr = x;}return *this;}
 			virtual 								~reverse_vector_iterator() {}
 			//-----------------------Overlodes-------------------------//
 			bool 									operator==(const reverse_vector_iterator &x)
@@ -419,6 +273,34 @@ namespace ft
 			pointer getArr()
 			{
 				return(arr);
+			}
+
+			difference_type						operator-(reverse_vector_iterator const &other)
+			{
+				return (this->arr - other.arr);
+			}
+
+			difference_type						operator+(reverse_vector_iterator const &other)
+			{
+				return (this->arr + other.arr);
+			}
+
+			reverse_vector_iterator operator+(const size_t &x)
+			{
+				return (this->arr + x);
+			}
+  			reverse_vector_iterator operator-(const size_t &x)
+			{
+				return (this->arr - x);
+			}
+
+			T &operator[](const size_t &target)
+			{
+				return *(arr + target); 
+			}
+  			const T &operator[](const size_t &target) const
+			{ 
+				return *(arr + target); 
 			}
 		};
 		template <class T>

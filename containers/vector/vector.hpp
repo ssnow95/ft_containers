@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 11:57:47 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/22 15:00:55 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/05 21:36:17 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,10 +137,7 @@ namespace ft
 			~vector()
 			{
 				if (_last_cell_mem > 0)
-				{                   //ХЗ решить если раскоментить падает swap
 					_alloc.deallocate(_arr, _last_cell_mem);
-					std::cout << "DELETE: _last_cell_mem:"<< _last_cell_mem<<std::endl;
-				}
 				_last_cell_mem = 0;
 				_size_vector = 0;
 			}
@@ -175,10 +172,9 @@ namespace ft
 				 _arr = _alloc.allocate(x._last_cell_mem);
 				 _start = x._start;
 				_finish = x._start;
-				//  x._arr = x._start;
 				size_type i = 0;
-				std::cout <<  x._last_cell_mem<<std::endl;
-				 for(; i < x._last_cell_mem ; i++)
+				// std::cout <<  x._last_cell_mem<<std::endl;
+				 for(; i < x._size_vector ; i++)
 				 {
 					_arr[i] = *_finish;
 					_finish++;
@@ -189,38 +185,38 @@ namespace ft
 
 			iterator begin()
 			{
-				return(iterator(_start));
+				return iterator(_arr); 
 			}
 			const_iterator begin() const
 			{
-				return(const_iterator(_start));
+				return const_iterator(_arr); 
 			}
 
 			iterator end()
 			{
-				return (iterator(_finish));
+				 return iterator(_arr + _size_vector); 
 			}
 			const_iterator end() const
 			{
-				return (const_iterator(_finish));
+				 return const_iterator(_arr + _size_vector); 
 			}
 
 			reverse_iterator rbegin()
 			{
-				return(reverse_iterator(_finish));
+				return reverse_iterator(&this->_arr[this->_size_vector - 1]);
 			}
 			const_reverse_iterator rbegin() const
 			{
-				return(const_reverse_iterator(_finish));
+				return const_reverse_iterator(&this->_arr[this->_size_vector - 1]);
 			}
 
 			reverse_iterator rend()
 			{
-				return(reverse_iterator(_start));
+				return (reverse_iterator(_arr - 1));
 			}
 			const_reverse_iterator rend() const
 			{
-				return(const_reverse_iterator(_start));
+				return(const_reverse_iterator(_arr - 1));
 			}
 
 			//************************************CAPACITY*******************************//
@@ -285,7 +281,7 @@ namespace ft
 			bool empty () const
 			{
 				if(_size_vector == 0)
-				{std::cout <<  "i'm here2"<<std::endl;
+				{
 					return (true);
 				}
 				else
@@ -362,9 +358,6 @@ namespace ft
 			{
 				clear();
 				_size_vector = 0;
-				_arr = _alloc.allocate(2);
-				_start = _arr;
-				_finish = &_arr[0];
 				_last_cell_mem = 2; 
 				for(size_t i = 0; i < n; i++)
 				{
@@ -373,22 +366,26 @@ namespace ft
 			}
 			
 			void push_back (const value_type& val)
-			{
+			{	
 				if(_size_vector < _last_cell_mem)
 				{ 
-					_alloc.construct(&_arr[_size_vector], val);
+
+					_arr[_size_vector] = val;
+					//_alloc.construct(&_arr[_size_vector], val);
 					_size_vector++;
-					_finish++;
+					_finish = &_arr[_size_vector];
+				
 				}
 				else
 				{
 					reallocMem(_last_cell_mem * 2);
 					_last_cell_mem = _last_cell_mem * 2;
-					_alloc.construct(&_arr[_size_vector], val);
+					_arr[_size_vector] = val;
+					// _alloc.construct(&_arr[_size_vector], val);
 					_size_vector++;
-					_finish++;
+					_finish = &_arr[_size_vector];
+					
 				}
-				 
 			}
 
 			void pop_back()
@@ -402,39 +399,38 @@ namespace ft
 			}
 			iterator insert (iterator position, const value_type& val)
 			{
-
-					size_type i = 0;
-					size_t tmp;
-					iterator it = begin();
-										
-					T saveVal;
-					T saveVal2;
-					if (_size_vector + 1 > _last_cell_mem)
-					{
-						reallocMem((_last_cell_mem + 1) * 2);
-						_last_cell_mem = (_last_cell_mem + 1) * 2;
-					}
-					while (i < _size_vector)
-					{
-						if (position == it)
-							break;
-						++it;
-						i++;
-					}	
-					saveVal = _arr[i];
-					_arr[i] = val;
-					tmp = i;
+				size_type i = 0;
+				size_t tmp;
+				iterator it = begin();
+									
+				T saveVal;
+				T saveVal2;
+				if (_size_vector + 1 > _last_cell_mem)
+				{
+					reallocMem((_last_cell_mem + 1) * 2);
+					_last_cell_mem = (_last_cell_mem + 1) * 2;
+				}
+				while (i < _size_vector)
+				{
+					if (position == it)
+						break;
+					++it;
 					i++;
-					_size_vector++;
-					while(i < _size_vector)
-					{
-						saveVal2 = _arr[i];
-						_arr[i] = saveVal;
-						saveVal = saveVal2;
-						i++;
-					}
-					_finish = &_arr[i];
-					return (iterator(&(_arr[tmp])));
+				}	
+				saveVal = _arr[i];
+				_arr[i] = val;
+				tmp = i;
+				i++;
+				_size_vector++;
+				while(i < _size_vector)
+				{
+					saveVal2 = _arr[i];
+					_arr[i] = saveVal;
+					saveVal = saveVal2;
+					i++;
+				}
+				_finish = &_arr[i];
+				return (iterator(&(_arr[tmp])));
 			}
 			
 			void insert (iterator position, size_type n, const value_type& val)
@@ -458,7 +454,7 @@ namespace ft
 			template <class InputIterator>
     		void insert (iterator position, InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
 			{
-				 size_t sum = 1;
+				size_t sum = 1;
 				InputIterator iter = first;
 				iterator it = begin();
 				int i = 0;
@@ -508,7 +504,6 @@ namespace ft
 					_alloc.destroy(&_arr[i]);
 					_size_vector--;
 					_finish = &_arr[i];
-					position--;
 				}
 				else
 				{
@@ -544,12 +539,9 @@ namespace ft
 
 			void swap (vector& x)
 			{
-				// std::cout<<  _size_vector<<std::endl;
 				size_t size_vector = _size_vector;
 				size_t last_cell_mem = _last_cell_mem;
 				T *arr = _arr;
-				// T *start = _arr;
-				// T *finish = &_arr[_size_vector];
 
 				_size_vector = x._size_vector;
 				_last_cell_mem = x._last_cell_mem;
@@ -561,7 +553,6 @@ namespace ft
 				x._last_cell_mem = last_cell_mem;
 				x._arr = arr;
 				x._start =&x._arr[0];
-				std::cout << *x._start<<", "<<  x._arr[0]<<std::endl;
 				x._finish = &x._arr[_size_vector];	
 			}
 
@@ -603,9 +594,7 @@ namespace ft
 			while(it != lhs.end())
 			{
 				if(*it.getArr() != *it2.getArr())
-				{std::cout << "here"<<*it.getArr()<< "!="<< *it2.getArr()<<std::endl;
 					return (false);
-				}
 				it++;
 				it2++;
 			}
@@ -616,95 +605,39 @@ namespace ft
 	}
 	
 	template <class T, class Alloc>
-		bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-		{
-			const_vector_iterator<T> it = lhs.begin();
-			const_vector_iterator<T> it2 = rhs.begin();
-			if(lhs.size() == rhs.size())
-			{
-				while(it != lhs.end())
-				{
-					if(*it.getArr() != *it2.getArr())
-						return (true);
-					it++;
-					it2++;
-				}
-				return(false);
-			}
-			else
-				return(true);
-		}
-
-	template <class T, class Alloc>
-		bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-		{
-			const_vector_iterator<T> it = lhs.begin();
-			const_vector_iterator<T> it2 = rhs.begin();
-			if(lhs.size() == rhs.size())
-			{
-				while(it != lhs.end())
-				{
-					if(*it.getArr() != *it2.getArr())
-						return (*it.getArr() < *it2.getArr());
-					it++;
-					it2++;
-				}
-				return(false);
-			}
-			else
-				return(lhs.size() < rhs.size());
-		}
-
-	template <class T, class Alloc>
-	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
 		const_vector_iterator<T> it = lhs.begin();
 		const_vector_iterator<T> it2 = rhs.begin();
-		if(lhs.size() > rhs.size())
+		if(lhs.size() == rhs.size())
 		{
 			while(it != lhs.end())
 			{
-				if(*it.getArr() > *it2.getArr())
-					return (*it.getArr() > *it2.getArr());
-				it++;
-				it2++;
-			}
-			return(false);
-		}
-		else
-			return(lhs.size() <= rhs.size());
-	}
-	
-template <class T, class Alloc>
-	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-	{
-		const_vector_iterator<T> it = lhs.begin();
-		const_vector_iterator<T> it2 = rhs.begin();
-		if(lhs.size() <= rhs.size())
-		{
-			while(it != lhs.end())
-			{
-				if(*it.getArr() > *it2.getArr())
+				if(*it.getArr() != *it2.getArr())
 					return (true);
 				it++;
 				it2++;
 			}
-			return(true);
+			return(false);
 		}
 		else
 			return(true);
 	}
-	
-template <class T, class Alloc>
-	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+
+	template <class T, class Alloc>
+	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
+		if (lhs.size() == 0)
+			return true;
+		else if (rhs.size() == 0)
+			return false;
 		const_vector_iterator<T> it = lhs.begin();
 		const_vector_iterator<T> it2 = rhs.begin();
-		if(lhs.size() < rhs.size())
+		if(lhs.size() == rhs.size())
 		{
 			while(it != lhs.end())
 			{
-				if(*it.getArr() < *it2.getArr())
+				if(*it.getArr() != *it2.getArr())
 					return (*it.getArr() < *it2.getArr());
 				it++;
 				it2++;
@@ -712,7 +645,122 @@ template <class T, class Alloc>
 			return(false);
 		}
 		else
-			return(lhs.size() >= rhs.size());
+		{
+			if(lhs.size() < rhs.size())
+				return(true);
+			else
+			{
+				it = lhs.begin();
+				it2 = rhs.begin();
+				while(it != lhs.end())
+				{
+					if(*it.getArr() != *it2.getArr())
+						return (*it.getArr() < *it2.getArr());
+					it++;
+					it2++;
+				}
+			return(false);
+			}
+		}
+	}
+
+	template <class T, class Alloc>
+	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		if (lhs.size() == 0)
+				return true;
+			else if (rhs.size() == 0)
+				return false;
+			const_vector_iterator<T> it = lhs.begin();
+			const_vector_iterator<T> it2 = rhs.begin();
+			if(lhs.size() == rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(*it.getArr() != *it2.getArr())
+						return (*it.getArr() <= *it2.getArr());
+					it++;
+					it2++;
+				}
+				return(true);
+			}
+			else
+			{
+				if(lhs.size() <= rhs.size())
+					return(true);
+				else
+				{
+					it = lhs.begin();
+					it2 = rhs.begin();
+					while(it != lhs.end())
+					{
+						if(*it.getArr() != *it2.getArr())
+							return (*it.getArr() <= *it2.getArr());
+						it++;
+						it2++;
+					}
+				return(false);
+				}
+			}
+	}
+	
+	template <class T, class Alloc>
+	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		if (lhs.size() == 0)
+				return false;
+			else if (rhs.size() == 0)
+				return true;
+			const_vector_iterator<T> it = lhs.begin();
+			const_vector_iterator<T> it2 = rhs.begin();
+			if(lhs.size() >= rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(*it.getArr() > *it2.getArr())
+						return (true);
+					else
+						return (false);
+					it++;
+					it2++;
+				}
+				return(false);
+			}
+			else
+				return(false);
+	}
+	
+	template <class T, class Alloc>
+	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		
+		if (lhs.size() == 0)
+				return false;
+		else if (rhs.size() == 0)
+			return true;
+		const_vector_iterator<T> it = lhs.begin();
+		const_vector_iterator<T> it2 = rhs.begin();
+		if(lhs.size() >= rhs.size())
+		{
+			while(it != lhs.end())
+			{
+				if(*it.getArr() >= *it2.getArr())
+					return (true);
+				else
+					return (false);
+				it++;
+				it2++;
+			}
+			return(false);
+		}
+		else
+			return(false);
+	}
+
+	template <class T, class Alloc>
+  	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
+	{
+		x.swap(y);
 	}
 };
 

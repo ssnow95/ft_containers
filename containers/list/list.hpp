@@ -6,7 +6,7 @@
 /*   By: ssnowbir <ssnowbir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/11 11:57:31 by ssnowbir          #+#    #+#             */
-/*   Updated: 2021/03/20 13:32:18 by ssnowbir         ###   ########.fr       */
+/*   Updated: 2021/04/05 15:31:47 by ssnowbir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ namespace ft
 		allocator_type							_alloc;
 		struct s_list<T>                        *_tail_lst;
 		size_t									_list_size;
+
 	public:
 		typedef ft::iterator<T>					iterator;
 		typedef ft::const_iterator<T>			const_iterator;
@@ -71,7 +72,7 @@ namespace ft
 				push_back(val);
 		}
 		template <class InputIterator>			
-		list (InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type(),
+												list (InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type(),
 														typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
 		{
 			_alloc = alloc;
@@ -90,6 +91,8 @@ namespace ft
 			_tail_lst = new struct s_list<T>;
 			_tail_lst->prev = _tail_lst;
 			_tail_lst->next = _tail_lst;
+			_tail_lst->data = 0;
+			_list_size = 0;
 			*this = x;
 			return ;
 		}
@@ -101,15 +104,13 @@ namespace ft
 		}
 		list&									operator=(const list& x)
 		{
-			_list_size = 0;
+			clear();
 			struct s_list<T>	*list_tmp = x._tail_lst->next;
 			if(x._list_size > 0)
 			{
 				while(list_tmp != x._tail_lst)
 				{
 					push_back(list_tmp->data);
-	
-					// ft_lstadd_back(&_list, new_list);
 					list_tmp = list_tmp->next;
 				}
 			}
@@ -186,7 +187,6 @@ namespace ft
 		template <class InputIterator>
 		void 									assign (InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
 		{
-			
 			clear();
 			insert(begin(),first, last);
 		}
@@ -238,8 +238,6 @@ namespace ft
 					_list_size--;
 					_tail_lst->data = _list_size;
 				}
-				
-
 		}
 		void									push_front (const value_type& val)
 		{
@@ -264,8 +262,6 @@ namespace ft
 				_list_size++;
 				_tail_lst->data = _list_size;
 			}
-
-
 		}
 		void									pop_front ()
 		{
@@ -290,8 +286,6 @@ namespace ft
 		}
 		iterator								insert (iterator position, const value_type& val)
 		{
-
-
 			struct s_list<T>*newNoda = new struct s_list<T>;
 			struct s_list<T>*tmp = position.getList();
 			newNoda->data = val;
@@ -311,7 +305,8 @@ namespace ft
 			}
 		}
 		template <class InputIterator>
-		void									insert (iterator position, InputIterator first, InputIterator last, typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
+		void									insert (iterator position, InputIterator first, InputIterator last,
+															typename std::enable_if<!std::numeric_limits<InputIterator>::is_specialized>::type* = 0)
 		{	
 			for(InputIterator it = first; it != last; it++)
 				insert(position, *it);
@@ -331,7 +326,6 @@ namespace ft
 		iterator								erase (iterator first, iterator last)
 		{
 			iterator tmp;
-
 			while (first != last)
 			{
 				tmp = first;
@@ -371,25 +365,11 @@ namespace ft
 		}
 		void									clear()
 		{		
-				if(_tail_lst->next)
-				{
-					
-					struct s_list<T>*tmp = _tail_lst->next;
-					size_t i = 0;
-					while(i < _list_size)
-					{
-						struct s_list<T> *next = tmp->next;
-						delete tmp;
-						tmp = next;
-						_list_size--;
-						_tail_lst->data = _list_size;
-					}
-					_tail_lst->next =  _tail_lst;
-					_tail_lst->prev =  _tail_lst;
-				}
+			while(_list_size > 0)
+				pop_front();
 		}
 		// ******************Operations*********************//
-		void splice (iterator position, list& x)
+		void 									splice (iterator position, list& x)
 		{
 			struct s_list<T>*tmpIter = position.getList();
 			while(x._list_size)
@@ -405,34 +385,52 @@ namespace ft
 				tmpIter = tmpIter->prev;
 				x.pop_back();
 			}
-
 		}
-		void splice (iterator position, list& x, iterator i)
+
+		bool 									check(list& x, iterator i)
 		{
-			struct s_list<T>*tmpIter = position.getList();
-			struct s_list<T>* tmp = new struct s_list<T>;
+			iterator src = x.begin();
+			size_t j = 0;
+			while(j < x._list_size)
+			{
+				if(src == i)
+					return(true);
+				src++;
+				j++;
+			}
+			return(false);
+		}
+		void 								splice (iterator position, list& x, iterator i)
+		{
+			if (check(x, i) == false)
+				return ;
+			struct s_list<T> *tmpIter = position.getList();
+			struct s_list<T> * tmp = new struct s_list<T>;
+			size_t j = 0;
 			iterator it = x.begin();
 			tmp->data = i.getList()->data;
 			tmp->prev = tmpIter->prev;
 			tmp->next = tmpIter;
 			tmpIter->prev->next = tmp;
 			tmpIter->prev = tmp;
-			_list_size++;
-			_tail_lst->data = _list_size;
 			tmpIter = tmpIter->prev;
 			struct s_list<T>* iter = x._tail_lst->next;
-			while(iter->data != tmp->data)
+			while(iter->data != tmp->data && j < x.size())
 			{
 				iter = iter->next;
+				j++;
 			}
-			iter->prev->next = iter->next;
-			iter->next->prev = iter->prev;
-			x._list_size--;
-			delete iter;
-
-
+			if(j != x.size())
+			{
+				_list_size++;
+				_tail_lst->data = _list_size;
+				iter->prev->next = iter->next;
+				iter->next->prev = iter->prev;
+				x._list_size--;
+				delete iter;	
+			}
 		}
-		void splice (iterator position, list& x, iterator first, iterator last)
+		void 								splice (iterator position, list& x, iterator first, iterator last)
 		{
 			while(first != last)
 			{
@@ -440,7 +438,7 @@ namespace ft
 				first++;
 			}
 		}
-		void remove (const value_type& val)
+		void 								remove (const value_type& val)
 		{
 			value_type src = _tail_lst->next->data;
 			struct s_list<T>* tmp = _tail_lst->next;
@@ -448,16 +446,14 @@ namespace ft
 			{
 				src = tmp->data;
 				if(src == val)
-				{
 					erase(iterator(tmp));
-				}
 				tmp = tmp->next;
 			}
 			
 		}
 
 		template <class Predicate>
-  		void remove_if (Predicate pred)
+  		void 								remove_if (Predicate pred)
 		{
 			struct s_list<T>* tmp = _tail_lst->next;
 			while(tmp != _tail_lst)
@@ -468,7 +464,7 @@ namespace ft
 			}
 		}
 
-		void sort()
+		void 								sort()
 		{
 			iterator it = begin();
 			iterator it2 = begin();
@@ -482,8 +478,7 @@ namespace ft
 				while(it2 != end())
 				{
 					if(tmp > it2)
-					{
-						
+					{	
 						insert(tmp, it2.getList()->data);
 						erase(it2);
 					}
@@ -497,7 +492,7 @@ namespace ft
 		}
 		
 		template <class Compare>
-  		void sort (Compare comp)
+  		void 							sort (Compare comp)
 		{
 			iterator it = begin();
 			iterator it2 = begin();
@@ -512,7 +507,6 @@ namespace ft
 				{
 					if(comp(it2.getList()->data, tmp.getList()->data))
 					{
-						
 						insert(tmp, it2.getList()->data);
 						erase(it2);
 					}
@@ -525,11 +519,15 @@ namespace ft
 			}
 		}
 
-		void unique()
+		void 							unique()
 		{
 			iterator it = begin();
 			iterator it2 = begin();
-			while(it != end())
+			size_t i = 0;
+			size_t j = size();
+			if(j == 0)
+				return ;
+			while(i < j - 1)
 			{
 				it = it2;
 				it2++;
@@ -537,15 +535,20 @@ namespace ft
 					erase(it2);
 				else
 					it++;
+				i++;
 			}
 		}
 
 		template <class BinaryPredicate>
-		void unique (BinaryPredicate binary_pred)
+		void 							unique (BinaryPredicate binary_pred)
 		{
 			iterator it = begin();
 			iterator it2 = begin();
-			while(it != end())
+			size_t i = 0;
+			size_t j = size();
+			if(j == 0)
+				return ;
+			while(i < j - 1)
 			{
 				it = it2;
 				it2++;
@@ -553,73 +556,58 @@ namespace ft
 					erase(it2);
 				else
 					it++;
+				i++;
 			}
 		}
 
-		void merge (list& x)
+		void 						merge (list& x)
 		{
+
+			if (&x == this)
+			return ;
+
 			iterator it = begin();
 			iterator it2 = x.begin();
-			iterator tmp = x.end();
-			int flag = 0;
-			size_t i = 0;
-			size_t j = x.size();
-			while(it != end())
+
+			while (it != end() && it2 != x.end())
 			{
-				if(i < j && it > it2)
+				while (it2 != x.end() && *it > *it2)
 				{
 					insert(it, it2.getList()->data);
-					x.erase(it2);
-					it2 = x.begin();
-					i++;
+					it2++;
 				}
-				else
-				{
-					it++;
-					if(it == end())
-						flag = 1;
-				}
+				it++;
 			}
-			while(it2 != x.end() && flag == 1)
-			{
-				push_back(it2.getList()->data);
-				it2++;
-			}
+			if (it2 != x.end())
+			this->splice(end(), x, it2, x.end());
+			x.clear();
+
+			
 		}
 		template <class Compare>
-		void merge (list& x, Compare comp)
+		void 						merge (list& x, Compare comp)
 		{
+						if (&x == this)
+			return ;
+
 			iterator it = begin();
 			iterator it2 = x.begin();
-			iterator tmp = x.end();
-			int flag = 0;
-			size_t i = 0;
-			size_t j = x.size();
-			while(it != end())
+
+			while (it != end() && it2 != x.end())
 			{
-				if(i < j && comp(it2.getList()->data, it.getList()->data))
+				while (it2 != x.end() && comp(it2.getList()->data, it.getList()->data))
 				{
 					insert(it, it2.getList()->data);
-					x.erase(it2);
-					it2 = x.begin();
-					i++;
+					it2++;
 				}
-				else
-				{
-					it++;
-					if(it == end())
-						flag = 1;
-				}
+				it++;
 			}
-			while(it2 != x.end() && flag == 1)
-			{
-				push_back(it2.getList()->data);
-				it2++;
-			}
+			if (it2 != x.end())
+			this->splice(end(), x, it2, x.end());
+			x.clear();
 		}
 
-
-		void reverse ()
+		void 						reverse ()
 		{
 
 			size_t j = 0;
@@ -635,7 +623,7 @@ namespace ft
 		}
 };
 		template <class T, class Alloc>
-		bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		bool 						operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 		{
 			const_iterator<T> it = lhs.begin();
 			const_iterator<T> it2 = rhs.begin();
@@ -654,7 +642,7 @@ namespace ft
 				return(false);
 		}
 		template <class T, class Alloc>
-		bool operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		bool 						operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 		{
 			const_iterator<T> it = lhs.begin();
 			const_iterator<T> it2 = rhs.begin();
@@ -673,8 +661,12 @@ namespace ft
 				return(true);
 		}
 		template <class T, class Alloc>
-		bool operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		bool 						operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 		{
+			if (lhs.size() == 0)
+				return true;
+			else if (rhs.size() == 0)
+				return false;
 			const_iterator<T> it = lhs.begin();
 			const_iterator<T> it2 = rhs.begin();
 			if(lhs.size() == rhs.size())
@@ -689,74 +681,118 @@ namespace ft
 				return(false);
 			}
 			else
-				return(lhs.size() < rhs.size());
+			{
+				if(lhs.size() < rhs.size())
+					return(true);
+				else
+				{
+					it = lhs.begin();
+					it2 = rhs.begin();
+					while(it != lhs.end())
+					{
+						if(it.getList()->data != it2.getList()->data)
+							return (it.getList()->data < it2.getList()->data);
+						it++;
+						it2++;
+					}
+				return(false);
+				}
+			}
 		}
 		template <class T, class Alloc>
-		bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		bool 									operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 		{
+			if (lhs.size() == 0)
+				return true;
+			else if (rhs.size() == 0)
+				return false;
 			const_iterator<T> it = lhs.begin();
 			const_iterator<T> it2 = rhs.begin();
-			if(lhs.size() > rhs.size())
+			if(lhs.size() == rhs.size())
 			{
 				while(it != lhs.end())
 				{
-					if(it.getList()->data > it2.getList()->data)
-						return (it.getList()->data > it2.getList()->data);
+					if(it.getList()->data != it2.getList()->data)
+						return (it.getList()->data <= it2.getList()->data);
 					it++;
 					it2++;
 				}
-				return(false);
+				return(true);
 			}
 			else
-				return(lhs.size() <= rhs.size());
+			{
+				if(lhs.size() <= rhs.size())
+					return(true);
+				else
+				{
+					it = lhs.begin();
+					it2 = rhs.begin();
+					while(it != lhs.end())
+					{
+						if(it.getList()->data != it2.getList()->data)
+							return (it.getList()->data <= it2.getList()->data);
+						it++;
+						it2++;
+					}
+				return(false);
+				}
+			}
 		}
 		template <class T, class Alloc>
-		bool operator>  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		bool 									operator>  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 		{
+			if (lhs.size() == 0)
+				return false;
+			else if (rhs.size() == 0)
+				return true;
 			const_iterator<T> it = lhs.begin();
 			const_iterator<T> it2 = rhs.begin();
-			if(lhs.size() <= rhs.size())
+			if(lhs.size() >= rhs.size())
 			{
 				while(it != lhs.end())
 				{
 					if(it.getList()->data > it2.getList()->data)
 						return (true);
-					it++;
-					it2++;
-				}
-				return(true);
-			}
-			else
-				return(true);
-		}
-		template <class T, class Alloc>
-		bool operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-		{
-			const_iterator<T> it = lhs.begin();
-			const_iterator<T> it2 = rhs.begin();
-			if(lhs.size() < rhs.size())
-			{
-				while(it != lhs.end())
-				{
-					if(it.getList()->data < it2.getList()->data)
-						return (it.getList()->data < it2.getList()->data);
+					else
+						return (false);
 					it++;
 					it2++;
 				}
 				return(false);
 			}
 			else
-				return(lhs.size() >= rhs.size());
+				return(false);
 		}
-
+		template <class T, class Alloc>
+		bool 									operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+		{
+			if (lhs.size() == 0)
+				return false;
+			else if (rhs.size() == 0)
+				return true;
+			const_iterator<T> it = lhs.begin();
+			const_iterator<T> it2 = rhs.begin();
+			if(lhs.size() >= rhs.size())
+			{
+				while(it != lhs.end())
+				{
+					if(it.getList()->data >= it2.getList()->data)
+						return (true);
+					else
+						return (false);
+					it++;
+					it2++;
+				}
+				return(false);
+			}
+			else
+				return(false);
+		}
 		template <class T, class Alloc>
 		void swap(list<T, Alloc> &x, list <T, Alloc> &y)
 		{
 			x.swap(y);
-		}
-		
+		}	
 };
-
-
 
 #endif
